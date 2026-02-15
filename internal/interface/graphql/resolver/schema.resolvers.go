@@ -13,19 +13,24 @@ import (
 	"github.com/KeiKom083/Portfolio-Backend/internal/interface/graphql/generated"
 )
 
-// CreateUser is the resolver for the createUser field.
-func (r *mutationResolver) CreateUser(ctx context.Context, input generated.CreateUserInput) (*model.User, error) {
-	return r.UserUsecase.CreateUser(ctx, input.Name, input.Email)
+// SignUp is the resolver for the signUp field.
+func (r *mutationResolver) SignUp(ctx context.Context, input generated.SignUpInput) (*model.User, error) {
+	panic(fmt.Errorf("not implemented: SignUp - signUp"))
 }
 
-// User is the resolver for the user field.
-func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
-	return r.UserUsecase.GetUser(ctx, id)
+// Login is the resolver for the login field.
+func (r *mutationResolver) Login(ctx context.Context, input generated.LoginInput) (*generated.AuthPayload, error) {
+	panic(fmt.Errorf("not implemented: Login - login"))
 }
 
-// Users is the resolver for the users field.
-func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	return r.UserUsecase.ListUsers(ctx)
+// Logout is the resolver for the logout field.
+func (r *mutationResolver) Logout(ctx context.Context) (bool, error) {
+	panic(fmt.Errorf("not implemented: Logout - logout"))
+}
+
+// Me is the resolver for the me field.
+func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
+	panic(fmt.Errorf("not implemented: Me - me"))
 }
 
 // CreatedAt is the resolver for the createdAt field.

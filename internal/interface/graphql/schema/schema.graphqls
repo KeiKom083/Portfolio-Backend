@@ -2,20 +2,33 @@ type User {
   id: ID!
   name: String!
   email: String!
-  createdAt: String!
-  updatedAt: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input SignUpInput {
+  name: String!
+  email: String!
+  password: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type AuthPayload {
+  user: User!
 }
 
 type Query {
-  user(id: ID!): User
-  users: [User!]!
-}
-
-input CreateUserInput {
-  name: String!
-  email: String!
+  me: User!
 }
 
 type Mutation {
-  createUser(input: CreateUserInput!): User!
+  signUp(input: SignUpInput!): User!
+  login(input: LoginInput!): AuthPayload!
+  logout: Boolean!
 }
+
+scalar DateTime

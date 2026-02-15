@@ -22,6 +22,28 @@ internal/
 
 ## セットアップ
 
+### Docker を使用する場合（推奨）
+
+```bash
+# 1. 依存パッケージのインストール
+go mod tidy
+
+# 2. gqlgen コード生成
+make generate
+
+# 3. 環境変数の設定
+cp .env.example .env
+# .env はデフォルト設定のまま使用可能
+
+# 4. PostgreSQL コンテナを起動
+make docker-up
+
+# 5. サーバー起動
+make run
+```
+
+### Docker を使用しない場合
+
 ```bash
 # 1. 依存パッケージのインストール
 go mod tidy
@@ -50,9 +72,20 @@ make run
 
 ## 開発コマンド
 
+### アプリケーション
+
 ```bash
 make generate  # GraphQL スキーマからコード生成
 make run       # 開発サーバー起動
 make build     # バイナリビルド
 make migrate   # DBマイグレーション
+```
+
+### Docker
+
+```bash
+make docker-up    # PostgreSQL コンテナ起動
+make docker-down  # PostgreSQL コンテナ停止
+make docker-logs  # PostgreSQL ログ確認
+make docker-ps    # コンテナ状態確認
 ```

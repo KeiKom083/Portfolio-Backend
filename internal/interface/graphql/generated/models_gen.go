@@ -2,13 +2,27 @@
 
 package generated
 
-type CreateUserInput struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
+import (
+	"github.com/KeiKom083/Portfolio-Backend/internal/domain/model"
+)
+
+type AuthPayload struct {
+	User *model.User `json:"user"`
+}
+
+type LoginInput struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 type Mutation struct {
 }
 
 type Query struct {
+}
+
+type SignUpInput struct {
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
