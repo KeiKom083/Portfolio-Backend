@@ -55,8 +55,8 @@ func (r *userRepository) FindAll(ctx context.Context) ([]*model.User, error) {
 func (r *userRepository) Create(ctx context.Context, user *model.User) error {
 	now := time.Now()
 	err := r.pool.QueryRow(ctx,
-		"INSERT INTO users (name, email, created_at, updated_at) VALUES ($1, $2, $3, $4) RETURNING id",
-		user.Name, user.Email, now, now,
+		"INSERT INTO users (name, email, password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+		user.Name, user.Email, user.PasswordHash, now, now,
 	).Scan(&user.ID)
 	if err != nil {
 		return fmt.Errorf("create user: %w", err)

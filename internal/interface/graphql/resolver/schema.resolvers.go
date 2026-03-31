@@ -7,40 +7,41 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/KeiKom083/Portfolio-Backend/internal/domain/model"
 	"github.com/KeiKom083/Portfolio-Backend/internal/interface/graphql/generated"
 )
 
+const timeLayout = "2006-01-02T15:04:05Z07:00"
+
 // SignUp is the resolver for the signUp field.
 func (r *mutationResolver) SignUp(ctx context.Context, input generated.SignUpInput) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: SignUp - signUp"))
+	return r.UserUsecase.SignUp(ctx, input.Name, input.Email, input.Password)
 }
 
 // Login is the resolver for the login field.
 func (r *mutationResolver) Login(ctx context.Context, input generated.LoginInput) (*generated.AuthPayload, error) {
-	panic(fmt.Errorf("not implemented: Login - login"))
+	panic("not implemented: Login - login")
 }
 
 // Logout is the resolver for the logout field.
 func (r *mutationResolver) Logout(ctx context.Context) (bool, error) {
-	panic(fmt.Errorf("not implemented: Logout - logout"))
+	panic("not implemented: Logout - logout")
 }
 
 // Me is the resolver for the me field.
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: Me - me"))
+	panic("not implemented: Me - me")
 }
 
 // CreatedAt is the resolver for the createdAt field.
 func (r *userResolver) CreatedAt(ctx context.Context, obj *model.User) (string, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - createdAt"))
+	return obj.CreatedAt.Format(timeLayout), nil
 }
 
 // UpdatedAt is the resolver for the updatedAt field.
 func (r *userResolver) UpdatedAt(ctx context.Context, obj *model.User) (string, error) {
-	panic(fmt.Errorf("not implemented: UpdatedAt - updatedAt"))
+	return obj.UpdatedAt.Format(timeLayout), nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
