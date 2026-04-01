@@ -12,9 +12,9 @@ run:
 build:
 	go build -o bin/server cmd/server/main.go
 
-## マイグレーション実行 (psql)
+## マイグレーション実行 (Docker経由)
 migrate:
-	psql $(DATABASE_URL) -f migrations/001_create_users.sql
+	docker exec -i portfolio-postgres psql -U postgres -d portfolio -f - < migrations/001_create_users.sql
 
 ## Docker起動
 docker-up:
