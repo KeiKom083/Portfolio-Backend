@@ -2,9 +2,6 @@ package usecase
 
 import (
 	"context"
-	"fmt"
-
-	"golang.org/x/crypto/bcrypt"
 
 	"github.com/KeiKom083/Portfolio-Backend/internal/domain/model"
 	"github.com/KeiKom083/Portfolio-Backend/internal/domain/repository"
@@ -44,14 +41,9 @@ func (u *UserUsecase) CreateUser(ctx context.Context, name, email string) (*mode
 
 // SignUp はパスワードをハッシュ化してユーザーを新規登録する。
 func (u *UserUsecase) SignUp(ctx context.Context, name, email, password string) (*model.User, error) {
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	user, err := model.NewUser(name, email, password)
 	if err != nil {
-		return nil, fmt.Errorf("hash password: %w", err)
-	}
-	user := &model.User{
-		Name:         name,
-		Email:        email,
-		PasswordHash: string(hash),
+		return nil, err
 	}
 	if err := u.userRepo.Create(ctx, user); err != nil {
 		return nil, err
