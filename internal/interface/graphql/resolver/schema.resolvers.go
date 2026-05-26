@@ -7,12 +7,20 @@ package resolver
 
 import (
 	"context"
+	"errors"
+	"net/http"
+	"time"
 
 	"github.com/KeiKom083/Portfolio-Backend/internal/domain/model"
 	"github.com/KeiKom083/Portfolio-Backend/internal/interface/graphql/generated"
+	"github.com/KeiKom083/Portfolio-Backend/internal/interface/graphql/middleware"
+	"github.com/KeiKom083/Portfolio-Backend/internal/usecase"
 )
 
-const timeLayout = "2006-01-02T15:04:05Z07:00"
+const (
+	timeLayout = "2006-01-02T15:04:05Z07:00"
+	sessionCookieName = "session_id"
+)
 
 // SignUp is the resolver for the signUp field.
 func (r *mutationResolver) SignUp(ctx context.Context, input generated.SignUpInput) (*model.User, error) {
@@ -21,17 +29,65 @@ func (r *mutationResolver) SignUp(ctx context.Context, input generated.SignUpInp
 
 // Login is the resolver for the login field.
 func (r *mutationResolver) Login(ctx context.Context, input generated.LoginInput) (*generated.AuthPayload, error) {
-	panic("not implemented: Login - login")
+	user, sessionID, err := r.UserUsecase.Login(ctx, input.Email, input.Password)
+	if err != nil {
+		if errors.Is(err, usecase.ErrInvalidCredentials) {
+			return nil, errors.New("メールアドレスまたはパスワードが正しくありません")
+		}
+		return nil, err
+	}
+
+	w := middleware.ResponseWriter(ctx)
+	if w != nil {
+		http.SetCookie(w, &http.Cookie{
+			Name:     sessionCookieName,
+			Value:    sessionID,
+			HttpOnly: true,
+			Path:     "/",
+			Expires:  time.Now().Add(24 * time.Hour),
+		})
+	}
+
+	return &generated.AuthPayload{User: user}, nil
 }
 
 // Logout is the resolver for the logout field.
 func (r *mutationResolver) Logout(ctx context.Context) (bool, error) {
-	panic("not implemented: Logout - logout")
+	r2 := middleware.Request(ctx)
+	if r2 == nil {
+		return false, nil
+	}
+	cookie, err := r2.Cookie(sessionCookieName)
+	if err != nil {
+		return false, nil
+	}
+	r.UserUsecase.Logout(cookie.Value)
+
+	w := middleware.ResponseWriter(ctx)
+	if w != nil {
+		http.SetCookie(w, &http.Cookie{
+			Name:     sessionCookieName,
+			Value:    "",
+			HttpOnly: true,
+			Path:     "/",
+			Expires:  time.Unix(0, 0),
+			MaxAge:   -1,
+		})
+	}
+	return true, nil
 }
 
 // Me is the resolver for the me field.
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
-	panic("not implemented: Me - me")
+	r2 := middleware.Request(ctx)
+	if r2 == nil {
+		return nil, errors.New("認証が必要です")
+	}
+	cookie, err := r2.Cookie(sessionCookieName)
+	if err != nil {
+		return nil, errors.New("認証が必要です")
+	}
+	return r.UserUsecase.GetUserBySessionID(ctx, cookie.Value)
 }
 
 // CreatedAt is the resolver for the createdAt field.

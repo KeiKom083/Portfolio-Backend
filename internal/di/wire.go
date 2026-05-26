@@ -9,7 +9,9 @@ import (
 
 	"github.com/KeiKom083/Portfolio-Backend/internal/infrastructure/database"
 	"github.com/KeiKom083/Portfolio-Backend/internal/infrastructure/persistence"
+	"github.com/KeiKom083/Portfolio-Backend/internal/infrastructure/session"
 	"github.com/KeiKom083/Portfolio-Backend/internal/interface/graphql/generated"
+	"github.com/KeiKom083/Portfolio-Backend/internal/interface/graphql/middleware"
 	"github.com/KeiKom083/Portfolio-Backend/internal/interface/graphql/resolver"
 	"github.com/KeiKom083/Portfolio-Backend/internal/usecase"
 	"github.com/KeiKom083/Portfolio-Backend/pkg/config"
@@ -27,9 +29,10 @@ func InitializeServer(cfg *config.Config) (http.Handler, func(), error) {
 
 	// --- Repository ---
 	userRepo := persistence.NewUserRepository(pool)
+	sessionRepo := session.NewStore()
 
 	// --- Usecase ---
-	userUsecase := usecase.NewUserUsecase(userRepo)
+	userUsecase := usecase.NewUserUsecase(userRepo, sessionRepo)
 
 	// --- GraphQL ---
 	resolv := resolver.NewResolver(userUsecase)
@@ -42,7 +45,7 @@ func InitializeServer(cfg *config.Config) (http.Handler, func(), error) {
 
 	// --- HTTP Router (標準ライブラリ) ---
 	mux := http.NewServeMux()
-	mux.Handle("/graphql", corsMiddleware(srv))
+	mux.Handle("/graphql", corsMiddleware(middleware.Inject(srv)))
 	mux.Handle("/playground", playground.Handler("GraphQL Playground", "/graphql"))
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
