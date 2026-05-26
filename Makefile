@@ -6,7 +6,7 @@ generate:
 
 ## 開発サーバー起動
 run:
-	go run cmd/server/main.go
+	export $(shell grep -v '^#' .env | xargs) && go run cmd/server/main.go
 
 ## バイナリビルド
 build:
