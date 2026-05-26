@@ -32,6 +32,17 @@ func (r *userRepository) FindByID(ctx context.Context, id string) (*model.User, 
 	return user, nil
 }
 
+func (r *userRepository) FindByEmail(ctx context.Context, email string) (*model.User, error) {
+	user := &model.User{}
+	err := r.pool.QueryRow(ctx,
+		"SELECT id, name, email, password, created_at, updated_at FROM users WHERE email = $1", email,
+	).Scan(&user.ID, &user.Name, &user.Email, &user.PasswordHash, &user.CreatedAt, &user.UpdatedAt)
+	if err != nil {
+		return nil, fmt.Errorf("find user by email: %w", err)
+	}
+	return user, nil
+}
+
 func (r *userRepository) FindAll(ctx context.Context) ([]*model.User, error) {
 	rows, err := r.pool.Query(ctx,
 		"SELECT id, name, email, created_at, updated_at FROM users ORDER BY created_at DESC",
