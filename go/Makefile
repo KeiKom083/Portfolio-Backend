@@ -18,19 +18,19 @@ migrate:
 
 ## Docker起動
 docker-up:
-	docker compose up -d
+	docker compose -f ../docker-compose.yml up -d
 
 ## Docker停止
 docker-down:
-	docker compose down
+	docker compose -f ../docker-compose.yml down
 
 ## Dockerログ確認
 docker-logs:
-	docker compose logs -f postgres
+	docker compose -f ../docker-compose.yml logs -f postgres
 
 ## Dockerコンテナ状態確認
 docker-ps:
-	docker compose ps
+	docker compose -f ../docker-compose.yml ps
 
 ## ヘルプ
 help:
